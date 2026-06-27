@@ -4,6 +4,10 @@ A Windows 11 system-tray tool for one-click connecting Bluetooth audio devices
 (AirPods, etc.) **and** switching the default audio output in a single action —
 something the stock Windows UI makes tedious.
 
+<p align="center">
+  <img src="docs/flyout.png" alt="BT Audio Tray flyout showing Bluetooth audio devices, with the connected AirPods Pro marked as the default output" width="320">
+</p>
+
 ## What it does
 
 - Lives in the notification area with a state-aware headphones icon (blue =
