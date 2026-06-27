@@ -44,11 +44,49 @@ dotnet build
 dotnet run        # or run bin/Debug/net10.0-windows10.0.19041.0/BTAudioTray.exe
 ```
 
-To stop it: right-click/left-click the tray icon → **Exit**.
+Click the tray icon to open the flyout. To stop the app: open the flyout → **Exit**.
+
+## Install & run at startup
+
+Publish a release build and copy it somewhere permanent, then register it to launch
+at login via the per-user `Run` key (no admin required):
+
+```powershell
+# Publish a framework-dependent build (needs the .NET 10 runtime installed)
+dotnet publish -c Release -r win-x64 --self-contained false -o publish
+
+# Install to LocalAppData
+$dest = "$env:LOCALAPPDATA\BTAudioTray"
+Remove-Item $dest -Recurse -Force -ErrorAction SilentlyContinue
+Copy-Item publish $dest -Recurse
+
+# Register to start with Windows
+Set-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" `
+    -Name BTAudioTray -Value "`"$dest\BTAudioTray.exe`""
+
+# Launch now
+Start-Process "$dest\BTAudioTray.exe"
+```
+
+To remove the auto-start entry:
+
+```powershell
+Remove-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -Name BTAudioTray
+```
 
 ## Status
 
 Working: device discovery, reliable connect/disconnect, verified default-output
-switching, state-aware icon, modern flyout UI.
+switching, state-aware icon, modern flyout UI, run-at-startup (manual install above).
 
-Not yet implemented: "start with Windows" auto-launch.
+Possible future work: an in-app "Start with Windows" toggle and an install script.
+
+## Acknowledgments
+
+The reliable Bluetooth-audio connect approach (driver-level Kernel Streaming
+`KSPROPERTY_ONESHOT_RECONNECT`) is based on
+[ToothTray](https://github.com/m2jean/ToothTray) by m2jean.
+
+## License
+
+[MIT](LICENSE) © Jeremy Leff
